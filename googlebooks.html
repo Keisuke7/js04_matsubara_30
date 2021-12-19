@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="css/sample.css">
+  <title>GoogleBook検索</title>
+</head>
+
+<body>
+
+  <header>
+    <h1>GoogleBooks検索</h1>
+    <p>
+      <input type="text" id="keyword" value="レスポンシブWeb">
+      <button id="readbook">データ読み込み</button>
+    </p>
+  </header>
+
+  <main>
+    <p id="content"></p>
+  </main>
+
+
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script>
+
+    // データ読み込みボタンクリック時
+    $("#readbook").on('click', GetDataFromGoogle);
+
+    // エンターキーを押した時
+    $("#keyword").on("keydown", function (e) {
+      if (e.keyCode === 13) {
+        GetDataFromGoogle();
+      }
+    });
+    
+    // Googleから取得
+    function GetDataFromGoogle() {
+      const keyword = $("#keyword").val()
+      $.get("https://www.googleapis.com/books/v1/volumes?q=" + keyword, function (data) {
+        const items = data.items;
+        // #contentの中身を定義
+        let view = "";
+
+        // 本ごとにタイトルと題名を追加　
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          const title = item.volumeInfo.title;
+          const publisher = item.volumeInfo.publisher;
+          view += "<ul><li>題名 :" + title + "<br>" + publisher + "</li></ul>";
+        }
+
+        // #contentの中身を一度全て削除
+        $("#content").children().remove();
+        // #contentに追加
+        $("#content").html(view);
+      });
+    }
+
+  </script>
+</body>
+
+</html>
